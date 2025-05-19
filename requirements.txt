@@ -1,0 +1,14 @@
+pennylane
+transformers
+jax==0.4.28
+jaxlib==0.4.28
+numpy
+pandas
+seaborn
+matplotlib
+torch
+tensorflow
+optax
+keras
+sklearn
+cv2
