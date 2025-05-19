@@ -11,4 +11,4 @@ tensorflow
 optax
 keras
 sklearn
-cv2
+opencv-python
