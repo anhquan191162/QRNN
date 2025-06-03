@@ -3,9 +3,17 @@ import seaborn as sns
 import numpy as np
 import matplotlib as mpl
 import os
+import pandas as pd
 def gen_plotter2(train_size_list : list, train_loss_lsts_size : list, test_loss_lsts_size : list,
                 train_acc_lsts_size : list, test_acc_lsts_size : list, generalization_errors : list, desc = 'MNIST'):
-
+    os.makedirs('QRNN_JAX/plots', exist_ok=True)
+    os.makedirs('QRNN_JAX/results', exist_ok=True)
+    plot_path = os.path.join('QRNN_JAX/plots', f'QRNN_JAX_{desc}.png')
+    results_path = os.path.join('QRNN_JAX/results', f'QRNN_JAX_{desc}.csv')
+    if os.path.exists(plot_path) or os.path.exists(results_path):
+        print(f'Plot or results for {desc} already exist. Continuing...')
+    else:
+        print(f'Initialized directories for {desc}')
     r = np.linspace(0,99,100)
     sns.set_style('whitegrid')
     colors = sns.color_palette()
@@ -57,8 +65,10 @@ def gen_plotter2(train_size_list : list, train_loss_lsts_size : list, test_loss_
     axes[2].legend(handles=legend_elements, ncol=3)
 
     plt.tight_layout()
-    os.makedirs('QRNN_JAX/plots', exist_ok=True)
-    plt.savefig(f'QRNN_JAX/plots/QRNN_JAX_{desc}.png')
+    plt.savefig(plot_path)
+    pd.DataFrame({'train_losses': train_loss_lsts_size, 'test_losses': test_loss_lsts_size, 'train_accs': train_acc_lsts_size, 'test_accs': test_acc_lsts_size}).to_csv(results_path, index=False)
+    print(f'Saved plot to {plot_path}')
+    print(f'Saved results to {results_path}')
     plt.show() 
 
 

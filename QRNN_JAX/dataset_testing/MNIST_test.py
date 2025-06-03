@@ -1,8 +1,8 @@
 import keras
 import numpy as np
 import jax.numpy as jnp
-# np.random.seed(42)
-def load_mnist(n_train=15000,n_test=150, patch_size=10, reduce_fn=np.max):
+
+def load_mnist(n_train=100, n_test=100, patch_size=10, reduce_fn=np.max, classify_choice = [0,1], show_size = False):
     def patchify_images(images):
         H, W = images.shape[1:]
         sequences = []
@@ -19,8 +19,19 @@ def load_mnist(n_train=15000,n_test=150, patch_size=10, reduce_fn=np.max):
         return (seq - min_val) / (max_val - min_val) * np.pi
 
     (X_train, y_train), (X_test, y_test) = keras.datasets.mnist.load_data()
-    X_train, y_train = X_train[(y_train == 0) | (y_train == 1)], y_train[(y_train == 0) | (y_train == 1)]
-    X_test, y_test = X_test[(y_test == 0) | (y_test == 1)], y_test[(y_test == 0) | (y_test == 1)]
+    # Filter for digits 1 and 7
+    train_mask = (y_train == classify_choice[0]) | (y_train == classify_choice[1])
+    test_mask = (y_test == classify_choice[0]) | (y_test == classify_choice[1]) 
+    X_train, y_train = X_train[train_mask], y_train[train_mask]
+    X_test, y_test = X_test[test_mask], y_test[test_mask]
+    if show_size:
+        print(f"X_train shape: {X_train.shape}")
+        print(f"X_test shape: {X_test.shape}")
+        print(f"y_train shape: {y_train.shape}")
+        print(f"y_test shape: {y_test.shape}")
+    # Map labels: 1 -> 0, 7 -> 1
+    y_train = np.where(y_train == classify_choice[0], 0, 1)
+    y_test = np.where(y_test == classify_choice[0], 0, 1)
 
     np.random.seed(42)
     train_indices = np.random.choice(len(X_train), size=n_train, replace=False)
@@ -39,17 +50,12 @@ def load_mnist(n_train=15000,n_test=150, patch_size=10, reduce_fn=np.max):
     return X_train_seq, y_train_bin, X_test_seq, y_test_bin
 
 
-
-
 if __name__ == "__main__":
-    X_train_seq, y_train_bin, X_test_seq, y_test_bin = load_mnist(80)
+    X_train_seq, y_train_bin, X_test_seq, y_test_bin = load_mnist(8000, 2000, show_size=True)
     print(X_train_seq.shape)
     print(X_test_seq.shape)
     print(y_train_bin.shape)
     print(y_test_bin.shape)
     print('Example of X_train_seq:', X_train_seq[0])
     print('Example of y_train_bin:', y_train_bin[0])
-    print(X_train_seq[1])
-    print(X_train_seq[2])
-
-
+    
